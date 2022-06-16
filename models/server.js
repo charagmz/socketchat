@@ -1,13 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-const { dbConnection } = require('../database/config');
 const fileUpload = require('express-fileupload');
+const {createServer} = require('http');
+
+const { dbConnection } = require('../database/config');
+const { socketController } = require('../sockets/controller');
 
 class Server {
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
+        // Inicializaction socket io
+        this.server = createServer(this.app);
+        this.io     = require('socket.io')(this.server);
+
+
         this.paths = {
             auth: '/api/auth',
             buscar: '/api/buscar',
@@ -25,6 +33,9 @@ class Server {
 
         // Rutas de mi aplicacion
         this.routes();
+
+        // Sockets
+        this.sockets();
     }
 
     async conectarDB() {
@@ -61,8 +72,13 @@ class Server {
         this.app.use(this.paths.usuarios, require('../routes/usuarios'));
     }
 
+    sockets() {
+        this.io.on('connection', socketController );
+    }
+
     listen() {
-        this.app.listen(this.port, () => {
+        // se debe poner a escuchar el nuevo server porque el de express "this.app" no tiene nada de sockets
+        this.server.listen(this.port, () => {
             console.log('Servidor escuchando en puerto', this.port);
         });        
     }
