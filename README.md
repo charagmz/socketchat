@@ -1,0 +1,2 @@
+# Notas:
+Socket Chat NodeJs
