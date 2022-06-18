@@ -63,8 +63,8 @@ const conectarSocket = async () => {
     // se envia solo la referencia a la funcion porque el contenido de la funcion flecha es solo el llamado a una funcion donde el primer argumento es igual al primer argumento del callback 
     socket.on('usuarios-activos', dibujarUsuarios);
 
-    socket.on('mensaje-privado', () => {
-        // TODO:
+    socket.on('mensaje-privado', (payload) => {
+        console.log('Privado:', payload);
     });
 
 }
